@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Item from './Item'
+import ConfirmationModal from './ConfirmationModal'
 
 export default function PackingList({
   items,
@@ -8,6 +9,7 @@ export default function PackingList({
   clearItemList,
 }) {
   const [sortBy, setSortBy] = useState('input')
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   let sortedItems
 
@@ -21,6 +23,20 @@ export default function PackingList({
     sortedItems = items
       .slice()
       .sort((a, b) => Number(a.packed) - Number(b.packed))
+
+  const handleClearClick = () => {
+    setShowConfirmModal(true)
+  }
+
+  const handleConfirmClear = () => {
+    clearItemList()
+    setShowConfirmModal(false)
+  }
+
+  const handleCancelClear = () => {
+    setShowConfirmModal(false)
+  }
+
   return (
     <div className="list">
       <ul>
@@ -40,8 +56,16 @@ export default function PackingList({
           <option value="description">Sort by description</option>
           <option value="packed">Sort by packed status</option>
         </select>
-        <button onClick={clearItemList}>Clear list</button>
+        <button onClick={handleClearClick}>Clear list</button>
       </div>
+
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onConfirm={handleConfirmClear}
+        onCancel={handleCancelClear}
+        title="Clear All Items"
+        message="Are you sure you want to delete all items from your packing list? This action cannot be undone."
+      />
     </div>
   )
 }
